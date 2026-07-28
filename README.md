@@ -1,6 +1,12 @@
 # Nexus Mini ERP + CRM Operations Portal
 
+[![Open Source CI/CD Pipeline](https://github.com/AritraBanerjee-09/mini-erp-crm/actions/workflows/deploy.yml/badge.svg)](https://github.com/AritraBanerjee-09/mini-erp-crm/actions)
+[![Deploy to Render](https://render.com/images/deploy-to-render.svg)](https://render.com/deploy?repo=https://github.com/AritraBanerjee-09/mini-erp-crm)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/AritraBanerjee-09/mini-erp-crm&root-directory=frontend)
+
 A full-stack, production-ready **Mini ERP & CRM Portal** built for wholesale and distribution enterprises. This application manages customer relationships, catalog stock inventory, stock movement auditing, automated sales challans, invoice generation, and tax PDF receipt exports with strict role-based access control (RBAC).
+
+**GitHub Repository**: [https://github.com/AritraBanerjee-09/mini-erp-crm](https://github.com/AritraBanerjee-09/mini-erp-crm)
 
 ---
 
