@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -41,11 +41,11 @@ model Customer {
 }
 
 model CustomerFollowUp {
-  id         String   @id @default(uuid())
-  customerId String
-  note       String
+  id          String   @id @default(uuid())
+  customerId  String
+  note        String
   createdById String
-  createdAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   customer  Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdBy User     @relation(fields: [createdById], references: [id])
