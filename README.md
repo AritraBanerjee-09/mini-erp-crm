@@ -1,8 +1,44 @@
 # Nexus Mini ERP + CRM Operations Portal
 
+[![Open Source CI/CD Pipeline](https://github.com/AritraBanerjee-09/mini-erp-crm/actions/workflows/deploy.yml/badge.svg)](https://github.com/AritraBanerjee-09/mini-erp-crm/actions)
+[![Deploy to Render](https://render.com/images/deploy-to-render.svg)](https://render.com/deploy?repo=https://github.com/AritraBanerjee-09/mini-erp-crm)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/AritraBanerjee-09/mini-erp-crm&root-directory=frontend)
+
 A full-stack, enterprise-grade **Mini ERP & CRM Operations Portal** designed for wholesale and distribution businesses. This application manages customer relationships, catalog stock inventory, stock movement auditing, automated sales challans, tax invoice generation, and PDF receipt exports with strict role-based access control (RBAC).
 
 **GitHub Repository**: [https://github.com/AritraBanerjee-09/mini-erp-crm](https://github.com/AritraBanerjee-09/mini-erp-crm)
+
+---
+
+## 📸 User Interface Showcase & Screenshots
+
+### 1. Operations Overview Dashboard
+![Operations Overview Dashboard](assets/dashboard.png)
+* **Explanation**: The real-time operational dashboard provides executive KPI metric cards for Total Customers, Catalog Products, Low Stock Alerts, Confirmed Sales Revenue, and Pending Receivables. It features a **Low Stock Alert Monitor** highlighting critical inventory items below threshold limits and an **Upcoming Lead Follow-ups** widget displaying scheduled CRM follow-up dates.
+
+---
+
+### 2. Customer CRM Management
+![Customer CRM Management](assets/crm.png)
+* **Explanation**: The CRM module manages customer profiles across status types (**Lead**, **Active**, **Inactive**) and business categories (**Retail**, **Wholesale**, **Distributor**). It includes real-time multi-field search (Name, Business, Mobile, Email, GST Number), next follow-up scheduling, and interactive detail drawers for logging staff follow-up notes.
+
+---
+
+### 3. Product & Inventory Control
+![Product & Inventory Control](assets/products.png)
+* **Explanation**: The central inventory catalog displays product details, SKU codes, categories, unit prices (INR), warehouse locations, and current stock levels. Items below threshold limits trigger prominent **Low Stock Warning Badges** (`LOW STOCK (MIN: 5)`). Warehouse managers can adjust inventory via the **± Stock** button or inspect audit history via the **Logs** button.
+
+---
+
+### 4. Sales Challans & Dispatch
+![Sales Challans & Dispatch](assets/challans.png)
+* **Explanation**: The Sales Challan manager tracks auto-generated sequential order numbers (e.g., `CH-202607-0001`), customer profiles, item counts, total amounts, and status badges (**Draft**, **Confirmed**, **Cancelled**). Confirming a challan automatically verifies stock availability, deducts inventory, and records `OUT` stock movement logs.
+
+---
+
+### 5. Invoices & Billing
+![Invoices & Billing](assets/invoices.png)
+* **Explanation**: The Invoices module generates official tax billing receipts from confirmed sales challans with an auto-calculated 30-day payment credit window. Users can view invoice details or export vector **PDF tax receipts** directly via the **PDF** download button.
 
 ---
 
@@ -77,7 +113,7 @@ The backend server is structured with modular TypeScript routers:
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/auth/register` | Register new user account | Public |
 | `POST` | `/api/auth/login` | Authenticate user & get JWT token | Public |
-| `GET` | `/api/auth/me` | Fetch authenticated user profile | Authenticated |
+| `GET` | `/api/auth/me` | Fetch current user profile | Authenticated |
 | `GET` | `/api/customers` | Search & list CRM customers | Authenticated |
 | `POST` | `/api/customers` | Add new customer profile | Admin, Sales |
 | `POST` | `/api/customers/:id/followups` | Add follow-up note to customer | Admin, Sales |
@@ -87,7 +123,7 @@ The backend server is structured with modular TypeScript routers:
 | `GET` | `/api/products/:id/stock-logs` | Fetch stock audit logs for item | Authenticated |
 | `GET` | `/api/challans` | List sales challans | Authenticated |
 | `POST` | `/api/challans` | Create sales challan | Admin, Sales |
-| `PUT` | `/api/challans/:id/status` | Confirm/Cancel sales challan | Admin, Sales, Warehouse |
+| `PUT` | `/api/challans/:id/status` | Update challan status (Confirm/Cancel) | Admin, Sales, Warehouse |
 | `GET` | `/api/invoices` | List tax invoices | Authenticated |
 | `POST` | `/api/invoices/generate/:challanId` | Generate tax invoice | Admin, Accounts |
 | `GET` | `/api/invoices/:id/pdf` | Stream downloadable PDF tax receipt | Authenticated |
@@ -159,7 +195,7 @@ The complete API collection is located at:
 ---
 
 ## 💡 Key Business Assumptions
-1. **Zero Negative Stock Policy**: Stock cannot drop below zero. Server-side validation rejects orders exceeding current stock levels.
+1. **Zero Negative Stock Policy**: Stock cannot drop below zero. Server-side validation rejects any order exceeding current stock levels.
 2. **Product Snapshots**: Historical sales records (challans) store immutable snapshots of product names and prices at order creation time.
 3. **Automated Reversion**: Cancelling a confirmed sales challan automatically restores stock to the warehouse and logs an `IN` stock movement.
 4. **Credit Window**: Invoices default to a 30-day payment due window.
