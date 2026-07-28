@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Layers, ShieldCheck, UserCheck, Package, Receipt, ArrowRight } from 'lucide-react';
+import { Role } from '../types';
+import { Layers, ShieldCheck, UserCheck, Package, Receipt, ArrowRight, UserPlus } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, register } = useAuth();
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+
+  // Form states
   const [email, setEmail] = useState('admin@minierp.com');
   const [password, setPassword] = useState('Password123');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState<Role>('SALES');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -14,15 +21,20 @@ export const Login: React.FC = () => {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      if (isRegisterMode) {
+        await register(name, email, password, role);
+      } else {
+        await login(email, password);
+      }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check credentials.');
+      setError(err.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleQuickLogin = async (demoEmail: string) => {
+    setIsRegisterMode(false);
     setEmail(demoEmail);
     setPassword('Password123');
     setError('');
@@ -54,9 +66,11 @@ export const Login: React.FC = () => {
     }}>
       <div style={{ width: '100%', maxWidth: '1000px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center' }}>
         
-        {/* Left Card - Form */}
+        {/* Left Card - Form (Login / Register Switcher) */}
         <div className="glass-card" style={{ padding: '36px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+          
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             <div style={{
               width: '42px',
               height: '42px',
@@ -71,9 +85,58 @@ export const Login: React.FC = () => {
               <Layers size={24} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Welcome to Nexus</h2>
-              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>Sign in to Operations Portal</p>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Nexus Portal</h2>
+              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                {isRegisterMode ? 'Create a new user account' : 'Sign in to Operations Portal'}
+              </p>
             </div>
+          </div>
+
+          {/* Tab Switcher */}
+          <div style={{
+            display: 'flex',
+            background: 'rgba(13, 19, 34, 0.8)',
+            padding: '4px',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: '20px',
+            border: '1px solid var(--border-color)'
+          }}>
+            <button
+              type="button"
+              onClick={() => { setIsRegisterMode(false); setError(''); }}
+              style={{
+                flex: 1,
+                padding: '8px',
+                border: 'none',
+                borderRadius: '4px',
+                background: !isRegisterMode ? 'var(--primary)' : 'transparent',
+                color: !isRegisterMode ? '#FFF' : 'var(--text-muted)',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => { setIsRegisterMode(true); setError(''); }}
+              style={{
+                flex: 1,
+                padding: '8px',
+                border: 'none',
+                borderRadius: '4px',
+                background: isRegisterMode ? 'var(--primary)' : 'transparent',
+                color: isRegisterMode ? '#FFF' : 'var(--text-muted)',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              Register New Account
+            </button>
           </div>
 
           {error && (
@@ -91,11 +154,26 @@ export const Login: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit}>
+            {isRegisterMode && (
+              <div className="input-group">
+                <label className="input-label">Full Name *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. John Doe"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
             <div className="input-group">
-              <label className="input-label">Email Address</label>
+              <label className="input-label">Email Address *</label>
               <input
                 type="email"
                 className="form-input"
+                placeholder="e.g. user@company.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
@@ -103,15 +181,32 @@ export const Login: React.FC = () => {
             </div>
 
             <div className="input-group">
-              <label className="input-label">Password</label>
+              <label className="input-label">Password *</label>
               <input
                 type="password"
                 className="form-input"
+                placeholder="At least 6 characters"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
               />
             </div>
+
+            {isRegisterMode && (
+              <div className="input-group">
+                <label className="input-label">Select Assigned Role *</label>
+                <select
+                  className="form-select"
+                  value={role}
+                  onChange={e => setRole(e.target.value as Role)}
+                >
+                  <option value="SALES">Sales Executive (CRM & Challans)</option>
+                  <option value="WAREHOUSE">Warehouse Manager (Stock & Inventory)</option>
+                  <option value="ACCOUNTS">Accounts Executive (Invoices & Billing)</option>
+                  <option value="ADMIN">Administrator (Full Access)</option>
+                </select>
+              </div>
+            )}
 
             <button
               type="submit"
@@ -119,8 +214,12 @@ export const Login: React.FC = () => {
               disabled={loading}
               style={{ width: '100%', marginTop: '12px', padding: '12px' }}
             >
-              {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
-              <ArrowRight size={16} />
+              {loading
+                ? 'Processing...'
+                : isRegisterMode
+                ? 'Create Account & Enter Portal'
+                : 'Sign In to Dashboard'}
+              {isRegisterMode ? <UserPlus size={16} /> : <ArrowRight size={16} />}
             </button>
           </form>
         </div>
@@ -128,8 +227,8 @@ export const Login: React.FC = () => {
         {/* Right Card - Quick Demo Login Roles */}
         <div>
           <div style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>1-Click Role Quick Login</h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Select a demo profile to test role-based access control instantly:</p>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>Or Quick Demo Login</h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>1-Click demo profiles pre-loaded with sample business data:</p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
