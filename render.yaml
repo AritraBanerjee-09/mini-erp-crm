@@ -1,0 +1,27 @@
+services:
+  # Backend Express REST API Service
+  - type: web
+    name: mini-erp-crm-backend
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: cd backend && npm install && npx prisma db push && npx prisma db seed && npm run build
+    startCommand: cd backend && npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: minierp-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+
+databases:
+  # Free PostgreSQL Database Instance on Render
+  - name: minierp-postgres
+    plan: free
+    databaseName: minierp
+    user: minierp_user
