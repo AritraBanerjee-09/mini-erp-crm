@@ -2,7 +2,13 @@
 
 A full-stack, enterprise-grade **Mini ERP & CRM Operations Portal** designed for wholesale and distribution businesses. This application manages customer relationships, catalog stock inventory, stock movement auditing, automated sales challans, tax invoice generation, and PDF receipt exports with strict role-based access control (RBAC).
 
-**GitHub Repository**: [https://github.com/AritraBanerjee-09/mini-erp-crm](https://github.com/AritraBanerjee-09/mini-erp-crm)
+---
+
+## 👤 Author & Developer
+
+**Created and Developed by**: **Aritra Banerjee**  
+- **GitHub Profile**: [https://github.com/AritraBanerjee-09](https://github.com/AritraBanerjee-09)  
+- **GitHub Repository**: [https://github.com/AritraBanerjee-09/mini-erp-crm](https://github.com/AritraBanerjee-09/mini-erp-crm)
 
 ---
 
@@ -199,4 +205,4 @@ The complete API collection is located at:
 ---
 
 ## 📜 License
-This project is licensed under the [MIT License](LICENSE).
+This project is created and developed by **Aritra Banerjee** and is licensed under the [MIT License](LICENSE).
