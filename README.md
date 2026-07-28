@@ -1,10 +1,6 @@
 # Nexus Mini ERP + CRM Operations Portal
 
-[![Open Source CI/CD Pipeline](https://github.com/AritraBanerjee-09/mini-erp-crm/actions/workflows/deploy.yml/badge.svg)](https://github.com/AritraBanerjee-09/mini-erp-crm/actions)
-[![Deploy to Render](https://render.com/images/deploy-to-render.svg)](https://render.com/deploy?repo=https://github.com/AritraBanerjee-09/mini-erp-crm)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/AritraBanerjee-09/mini-erp-crm&root-directory=frontend)
-
-A full-stack, production-ready **Mini ERP & CRM Portal** built for wholesale and distribution enterprises. This application manages customer relationships, catalog stock inventory, stock movement auditing, automated sales challans, invoice generation, and tax PDF receipt exports with strict role-based access control (RBAC).
+A full-stack, enterprise-grade **Mini ERP & CRM Operations Portal** designed for wholesale and distribution businesses. This application manages customer relationships, catalog stock inventory, stock movement auditing, automated sales challans, tax invoice generation, and PDF receipt exports with strict role-based access control (RBAC).
 
 **GitHub Repository**: [https://github.com/AritraBanerjee-09/mini-erp-crm](https://github.com/AritraBanerjee-09/mini-erp-crm)
 
@@ -12,144 +8,161 @@ A full-stack, production-ready **Mini ERP & CRM Portal** built for wholesale and
 
 ## 🔑 Demo Role Profiles (Pre-seeded Accounts)
 
-All demo accounts share the default password: `Password123`
+All accounts share the default password: `Password123`
 
 | Role | Email | Permissions & Focus |
 | :--- | :--- | :--- |
-| **Admin** | `admin@minierp.com` | Full unrestricted access to all modules and configurations |
+| **Admin** | `admin@minierp.com` | Full unrestricted access across all system modules |
 | **Sales** | `sales@minierp.com` | Customer CRM, Follow-up notes, Create & Manage Sales Challans |
-| **Warehouse** | `warehouse@minierp.com` | Product stock levels, Low stock warnings, Manual Stock IN/OUT Logs |
+| **Warehouse** | `warehouse@minierp.com` | Product stock levels, Low stock alerts, Manual Stock IN/OUT Logs |
 | **Accounts** | `accounts@minierp.com` | Confirmed Sales Challans review, Invoice Generation, PDF Exports |
 
 ---
 
-## 🛠️ Required Tech Stack
+## 🛠️ Tech Stack
 
-- **Backend**: Node.js (v18+), TypeScript, Express.js REST APIs, Prisma ORM, JWT Authentication, Zod validation, PDFKit.
-- **Frontend**: React 18, TypeScript, Vite, Glassmorphism UI tokens, Responsive dark aesthetics, Lucide React icons.
-- **Database**: SQLite (Zero-config local setup) & PostgreSQL ready (Render Postgres / Neon / Supabase).
-- **Deployment / DevOps**: Render Blueprint, Vercel Config, GitHub Actions CI/CD Pipeline, Docker Compose.
+### Backend
+- **Runtime**: Node.js with TypeScript
+- **Framework**: Express.js REST APIs
+- **ORM & Database**: Prisma ORM with PostgreSQL / SQLite support
+- **Authentication**: JWT (JSON Web Tokens) with role middleware
+- **Validation**: Zod schema validation
+- **PDF Generation**: PDFKit document stream generator
 
----
-
-## 📑 1. How the Server Was Set Up
-
-The backend server is architected as a modular TypeScript Express application:
-- **Express App Core** (`backend/src/server.ts`): Registers CORS middleware, JSON body parsing, global error handlers, health check endpoint (`/api/health`), and modular feature routers.
-- **Prisma Client Initialization** (`backend/src/db.ts`): Provides a singleton database connection managing connections cleanly across requests.
-- **Authentication & RBAC Middleware** (`backend/src/middleware/auth.ts`): Verifies JWT bearer tokens and enforces role restrictions per endpoint (e.g. only `WAREHOUSE` and `ADMIN` can adjust stock; only `ACCOUNTS` and `ADMIN` can generate invoices).
-- **REST Endpoints**:
-  - `POST /api/auth/login`, `GET /api/auth/me`
-  - `GET /api/customers`, `POST /api/customers`, `GET /api/customers/:id`, `PUT /api/customers/:id`, `POST /api/customers/:id/followups`
-  - `GET /api/products`, `POST /api/products`, `GET /api/products/:id`, `PUT /api/products/:id`, `POST /api/products/stock-movement`, `GET /api/products/:id/stock-logs`
-  - `GET /api/challans`, `POST /api/challans`, `GET /api/challans/:id`, `PUT /api/challans/:id/status`
-  - `GET /api/invoices`, `POST /api/invoices/generate/:challanId`, `GET /api/invoices/:id/pdf`
-  - `GET /api/dashboard/stats`
+### Frontend
+- **Framework**: React 18 + TypeScript + Vite
+- **Styling**: Glassmorphism CSS Design Tokens, Responsive layout & dark modern aesthetics
+- **Icons**: Lucide React
 
 ---
 
-## 🔑 2. How Environment Variables Are Managed
+## 📋 Core Modules & System Features
 
-Environment variables are isolated cleanly between local development and production deployments:
+### 1. Authentication & User Registration
+- JWT token authentication with 24-hour expiration.
+- User Registration (`POST /api/auth/register`): Allows new users to create an account and select an assigned role.
+- 1-Click Role Quick Login shortcuts on the login screen for testing permissions.
 
-- **Local Development**: Managed via `.env` file in `backend/` (ignored by Git for security):
+### 2. Customer CRM Module
+- Comprehensive Customer Profiles: Customer Name, Business Name, Mobile, Email, GST Number, Customer Type (*Retail, Wholesale, Distributor*), Address, Status (*Lead, Active, Inactive*), Follow-up Date, and Notes.
+- Multi-field Search (Name, Business Name, Mobile, Email, GST) & Filter by Status/Type.
+- Interactive CRM Timeline: Add follow-up notes with auto-updating next follow-up dates.
+
+### 3. Product & Inventory Control Module
+- Product Attributes: Name, SKU Code, Category, Unit Price, Current Stock, Minimum Stock Alert Limit, Warehouse Location.
+- Low Stock Warning Monitor: Highlights items below threshold limits.
+- Stock Movement Logs: Tracks every inventory change with quantity changed, movement type (`IN` / `OUT`), reason, created by user, and timestamp.
+- Manual Stock Adjustment modal for receiving restock shipments or logging loss.
+
+### 4. Sales Challan Module
+- Customer selection with multi-product picker and real-time stock availability feedback.
+- Auto-generated unique Challan Numbers (e.g. `CH-202607-0001`).
+- Save as `Draft` or `Confirmed`.
+- **Stock Guard Logic**: Confirmed status automatically reduces stock and logs `OUT` stock movements. Prevents negative stock levels with explicit `400 Bad Request` validation.
+- **Product Snapshot Data**: Stores historical product snapshots (`name`, `sku`, `unitPrice`) at creation time to protect against future price modifications.
+- Status transition: Draft → Confirmed (deducts stock) or Confirmed → Cancelled (restores stock).
+
+### 5. Invoices & PDF Export
+- Generate official tax invoices directly from confirmed sales challans.
+- Auto-calculated 30-day payment credit window.
+- Downloadable & printable PDF tax receipts generated via `/api/invoices/:id/pdf`.
+
+---
+
+## ⚙️ Server Architecture & API Overview
+
+The backend server is structured with modular TypeScript routers:
+
+| Method | Endpoint | Description | Allowed Roles |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Register new user account | Public |
+| `POST` | `/api/auth/login` | Authenticate user & get JWT token | Public |
+| `GET` | `/api/auth/me` | Fetch authenticated user profile | Authenticated |
+| `GET` | `/api/customers` | Search & list CRM customers | Authenticated |
+| `POST` | `/api/customers` | Add new customer profile | Admin, Sales |
+| `POST` | `/api/customers/:id/followups` | Add follow-up note to customer | Admin, Sales |
+| `GET` | `/api/products` | List inventory & low stock items | Authenticated |
+| `POST` | `/api/products` | Create catalog product | Admin, Warehouse |
+| `POST` | `/api/products/stock-movement` | Record manual stock adjustment | Admin, Warehouse |
+| `GET` | `/api/products/:id/stock-logs` | Fetch stock audit logs for item | Authenticated |
+| `GET` | `/api/challans` | List sales challans | Authenticated |
+| `POST` | `/api/challans` | Create sales challan | Admin, Sales |
+| `PUT` | `/api/challans/:id/status` | Confirm/Cancel sales challan | Admin, Sales, Warehouse |
+| `GET` | `/api/invoices` | List tax invoices | Authenticated |
+| `POST` | `/api/invoices/generate/:challanId` | Generate tax invoice | Admin, Accounts |
+| `GET` | `/api/invoices/:id/pdf` | Stream downloadable PDF tax receipt | Authenticated |
+| `GET` | `/api/dashboard/stats` | Operational summary statistics | Authenticated |
+
+---
+
+## 🔑 Environment Variable Management
+
+- **Backend Configuration** (`backend/.env`):
   ```env
   PORT=5000
-  DATABASE_URL="file:./dev.db"
-  JWT_SECRET="mini_erp_crm_super_secret_jwt_key_2026"
+  DATABASE_URL="postgresql://user:password@localhost:5432/minierp?schema=public"
+  JWT_SECRET="your_jwt_secret_key_2026"
   NODE_ENV="development"
   ```
-- **Template Reference**: Provided in `backend/.env.example` as a reference for new environments.
-- **Production Deployment**: Managed via cloud platform secret dashboards (Render / Vercel):
-  - `DATABASE_URL`: Connection string pointing to PostgreSQL database (e.g., Supabase/Neon/Render Postgres).
-  - `JWT_SECRET`: Random secure string used to sign JWT tokens.
-  - `PORT`: Set automatically by hosting environment (defaults to `5000`).
+- **Template Reference**: Provided in `backend/.env.example`.
 
 ---
 
-## 💻 3. How to Run the Project Locally
+## 💻 How to Run the Project Locally
 
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm or yarn
 
-### Step-by-step Local Launch
-
-#### 1. Backend Setup
+### Step 1: Backend Setup
 ```bash
-# Navigate to backend directory
 cd backend
 
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Push database schema & seed initial demo data
+# 2. Push database schema & seed initial data
 npx prisma db push
 npx prisma db seed
 
-# Build & launch dev server
+# 3. Start development server
 npm run dev
 ```
 Backend API will run at `http://localhost:5000`.
 
-#### 2. Frontend Setup
+### Step 2: Frontend Setup
 In a new terminal:
 ```bash
-# Navigate to frontend directory
 cd frontend
 
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Start Vite React dev server
+# 2. Start Vite development server
 npm run dev
 ```
-Frontend Web Portal will launch at `http://localhost:3000`.
+Frontend Web Portal will run at `http://localhost:3000`.
 
 ---
 
-## ☁️ 4. How to Deploy the Project
+## 📬 Postman Collection Guide
 
-### Option A: 1-Click Free Deployment (Render + Vercel)
+The complete API collection is located at:
+[`postman/Mini_ERP_CRM.postman_collection.json`](postman/Mini_ERP_CRM.postman_collection.json)
 
-1. **Deploy Backend & Database on Render**:
-   - Click the 1-Click Deploy button: [![Deploy to Render](https://render.com/images/deploy-to-render.svg)](https://render.com/deploy?repo=https://github.com/AritraBanerjee-09/mini-erp-crm)
-   - Render automatically reads [`render.yaml`](https://github.com/AritraBanerjee-09/mini-erp-crm/blob/main/render.yaml), provisions a **Render PostgreSQL Database**, runs Prisma database migrations/seeds, and launches the Express Web Service.
-
-2. **Deploy Frontend on Vercel**:
-   - Click the 1-Click Deploy button: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/AritraBanerjee-09/mini-erp-crm&root-directory=frontend)
-   - Connect your GitHub account and click **Deploy**. Vercel will build and host the Vite React application.
-
-### Option B: Docker Containerized Deployment
-
-Run the complete stack via Docker Compose:
-```bash
-docker-compose up --build
-```
-- Frontend will be served at `http://localhost:3000`.
-- Backend API will be served at `http://localhost:5000`.
-
----
-
-## 💡 5. Any Assumptions Made
-
-1. **Zero Negative Stock Policy**: Stock quantity cannot drop below zero under any condition. Stock validation is performed server-side before confirming any sales challan.
-2. **Product Snapshots**: Historical sales challans preserve exact product snapshots (`name`, `sku`, `unitPrice`) at the time of creation in `productSnapshotJson`. Subsequent price edits to catalog items will not alter historical challans or invoices.
-3. **Automatic Reversion**: Cancelling a confirmed sales challan automatically credits back stock to the warehouse and logs an `IN` stock movement entry in the audit trail.
-4. **Credit Period**: Invoices generated from confirmed challans default to a 30-day payment due window.
-
----
-
-## 📬 6. Postman Collection
-
-The API test collection is available in the repository at:
-[`postman/Mini_ERP_CRM.postman_collection.json`](https://github.com/AritraBanerjee-09/mini-erp-crm/blob/main/postman/Mini_ERP_CRM.postman_collection.json)
-
-### Importing to Postman:
+### How to Use in Postman:
 1. Open Postman → Click **Import**.
 2. Select `postman/Mini_ERP_CRM.postman_collection.json`.
-3. Set collection environment variable `baseUrl` to `http://localhost:5000/api`.
-4. Run `Login (Admin)` to obtain JWT token, which auto-fills the `authToken` variable for testing all CRM, Inventory, Challan, and Invoice endpoints.
+3. Set collection variable `baseUrl` to `http://localhost:5000/api`.
+4. Execute `Login (Admin)` to obtain JWT token, which populates `authToken` for testing all API endpoints.
+
+---
+
+## 💡 Key Business Assumptions
+1. **Zero Negative Stock Policy**: Stock cannot drop below zero. Server-side validation rejects orders exceeding current stock levels.
+2. **Product Snapshots**: Historical sales records (challans) store immutable snapshots of product names and prices at order creation time.
+3. **Automated Reversion**: Cancelling a confirmed sales challan automatically restores stock to the warehouse and logs an `IN` stock movement.
+4. **Credit Window**: Invoices default to a 30-day payment due window.
 
 ---
 
