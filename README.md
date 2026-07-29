@@ -201,5 +201,3 @@ The complete API collection is located at:
 Copyright (c) 2026 Aritra Banerjee
 
 This project is independently designed, developed, and maintained by **Aritra Banerjee**.
-
-This project is licensed under the **MIT License**. You are free to use, modify, and distribute this software in accordance with the terms of the MIT License. See the [LICENSE](LICENSE) file for complete details.
