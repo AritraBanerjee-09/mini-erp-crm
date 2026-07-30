@@ -4,14 +4,6 @@ A full-stack, enterprise-grade **Mini ERP & CRM Operations Portal** designed for
 
 ---
 
-## 👤 Author & Developer
-
-**Created and Developed by**: **Aritra Banerjee**  
-- **GitHub Profile**: [https://github.com/AritraBanerjee-09](https://github.com/AritraBanerjee-09)  
-- **GitHub Repository**: [https://github.com/AritraBanerjee-09/mini-erp-crm](https://github.com/AritraBanerjee-09/mini-erp-crm)
-
----
-
 ## 📸 User Interface Showcase & Screenshots
 
 ### 1. Operations Overview Dashboard
@@ -205,4 +197,7 @@ The complete API collection is located at:
 ---
 
 ## 📜 License
-This project is created and developed by **Aritra Banerjee** and is licensed under the [MIT License](LICENSE).
+
+Copyright (c) 2026 Aritra Banerjee
+
+This project is independently designed, developed, and maintained by **Aritra Banerjee**.
